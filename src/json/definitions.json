@@ -1,0 +1,7 @@
+{
+    "prefix": "k!",
+    "token": "<your-token-goes-here>",
+    "RichEmbed": {
+        "color": "#202225"
+    }
+}
