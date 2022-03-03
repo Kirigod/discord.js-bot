@@ -59,12 +59,9 @@ module.exports = {
                                 //passed level;
                                 const UserLevel = UserData.level + 1;
                                 db.collection("guilds").updateOne({_id: message.guild.id, "users.id": message.author.id}, {
-                                //db.collection("guilds").updateOne({_id: message.guild.id}, {
                                     "$set": {
                                         [`users.$.level`]: UserLevel,
                                         [`users.$.xp`]: 0
-                                        //[`users.${searchAuthorId}.level`]: UserLevel,
-                                        //[`users.${searchAuthorId}.xp`]: 0
                                     }
                                 }).then(() => {
                                     if(document.levels.announce.active === false) return;
@@ -104,10 +101,8 @@ module.exports = {
                             }else{
                                 //add xp;
                                 db.collection("guilds").updateOne({_id: message.guild.id, "users.id": message.author.id}, {
-                                //db.collection("guilds").updateOne({_id: message.guild.id}, {
                                     "$set": {
                                         [`users.$.xp`]: CurrentXP
-                                        //[`users.${searchAuthorId}.xp`]: CurrentXP
                                     }
                                 }).catch(console.log);
                             };
@@ -134,7 +129,7 @@ module.exports = {
             };
 
             /* ------- ANTI-INVITES ------- */
-            console.log("passou");
+            //console.log("ok");
         };
     }
 };
