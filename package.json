@@ -1,5 +1,5 @@
 {
-  "name": "imperial-bot",
+  "name": "discordjs-bot",
   "version": "1.0.0",
   "description": "A powerful JavaScript open source bot to make your Discord server a better place.",
   "main": "index.js",
