@@ -4,12 +4,12 @@ const ServerDB = new DatabaseServer({
     host: "localhost",
     port: 27017,
     exepath: __dirname + "/../www/mongodb/bin/mongod.exe",
-    dbpath: __dirname +"/../../db",
+    dbpath: __dirname +"/../db",
     dbname: Buffer.from("Adelson da Silva Filho").toString("hex"),
 });
 ServerDB.connect().then(() => console.log("MongoDB Connected!"));
 
-//String - Array - Number;
+//String - Array - Number - Boolean;
 const GuildsSchema = new mongoose.Schema({
     _id: {
         type: String
@@ -83,7 +83,7 @@ const GuildsSchema = new mongoose.Schema({
     },
     users: {
         type: Array,
-        default: []//{_id: "1234567890",level: 0,xp: 0,coins: 0, infractions: []};
+        default: []//{_id: "1234567890",level: 0,xp: 0,coins: 0,infractions: []};
     }
 });
 
@@ -101,12 +101,6 @@ const UsersSchema = new mongoose.Schema({
     rep: {
         type: Number,
         default: 0
-    },
-    rank: {
-        cardcolor: {
-            type: String,
-            default: "#HEX"
-        }
     }
 });
 
