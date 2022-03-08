@@ -13,30 +13,30 @@ const client = new Client({
 });
 client.commands = new Collection();
 
-fs.readdir("./commands/", (error, folders) => {
+fs.readdir("./src/client/commands/", (error, folders) => {
     if(error) return console.error(error);
 
     for(const folder of folders){
-        fs.readdir(`./commands/${folder}`, (error, files) => {
+        fs.readdir(`./src/client/commands/${folder}`, (error, files) => {
             if(error) return console.error(error);
 
             const commandFiles = files.filter(file => file.endsWith(".js"));
 
             for(const file of commandFiles){
-                const command = require(`./commands/${folder}/${file}`);
+                const command = require(`./src/client/commands/${folder}/${file}`);
                 client.commands.set(command.name, command);
             };
         });
     };
 });
 
-fs.readdir("./events/", (error, files) => {
+fs.readdir("./src/client/events/", (error, files) => {
     if(error) return console.error(error);
 
     const eventFiles = files.filter(file => file.endsWith(".js"));
 
     for(const file of eventFiles){
-        const event = require(`./events/${file}`);
+        const event = require(`./src/client/events/${file}`);
         if(event.once === true){
             client.once(event.name, (...args) => event.execute(client, ...args));
         }else if(event.once === false){
@@ -44,5 +44,6 @@ fs.readdir("./events/", (error, files) => {
         };
     };
 });
+
 
 client.login(token);
