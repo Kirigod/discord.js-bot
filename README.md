@@ -34,4 +34,4 @@ Ready? Your bot can now be started. Go to your terminal of choice, access the ro
 ## Contributing
 
 Before creating an issue, please ensure that it hasn't already been reported/suggested!<br>
-The issue tracker is only for bug reports and enhancement suggestions. If you have a question, please ask it in the **[Discord server](https://discord.gg/4D5TtFSWPZ)** instead of opening an issue – you will be redirected there anyway.
+The issue tracker is only for bug reports and enhancement suggestions. If you have a question, please make sure it's something useful and not something simple that can be solved with a basic search.
