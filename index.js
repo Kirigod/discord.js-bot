@@ -1,5 +1,5 @@
 "use strict";
-const { Client, Intents, Collection} = require("discord.js");
+const { Client, Intents, Collection } = require("discord.js");
 const { token } = require('./src/json/definitions.json');
 const fs = require("fs");
 const client = new Client({
