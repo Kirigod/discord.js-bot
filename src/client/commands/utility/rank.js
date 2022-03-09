@@ -13,11 +13,11 @@ const PresenceStatusColors = {
 
 module.exports = {
     name: "rank",
-	category: "utility",
+    category: "utility",
     description: "Get your rank or another user's rank.",
-	usage: "[command] (optional member)",
+    usage: "[command] (optional member)",
     aliases: ["rk"],
-	cooldown: 30000,//30s;
+    cooldown: 30000,//30s;
     permissions: {
         bot: ["ATTACH_FILES"],
         user: []
