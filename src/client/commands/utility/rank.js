@@ -153,7 +153,7 @@ module.exports = {
 			ctx.font = "extra bold 22px Arial";
 			ctx.textAlign = "right";
 			
-			ctx.fillText(`/ ${XPXP} XP`, 884, canvas.height / 2 + 25)
+			ctx.fillText(`/ ${abbreviateNumber(XPXP)} XP`, 884, canvas.height / 2 + 25)
 			ctx.fillStyle = "white";
 			ctx.fillText(XP, 884 - ctx.measureText(` / ${abbreviateNumber(XPXP)} XP`).width, canvas.height / 2 + 25)
 			
