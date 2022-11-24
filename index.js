@@ -45,5 +45,13 @@ fs.readdir("./src/client/events/", (error, files) => {
     };
 });
 
+client.on('ready', () => {
+    client.application.commands.create({ name: 'ping', description: 'Ping command' });
+})
 
+client.on('interactionCreate' () => {
+    if (!interaction.commandName === 'ping') return;
+    interaction.reply('Pong!').catch(() => {});
+})
+    
 client.login(token);
