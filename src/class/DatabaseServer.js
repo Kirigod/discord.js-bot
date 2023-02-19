@@ -1,6 +1,6 @@
 "use strict";
 const child_process = require("child_process");
-const mongoose = require("mongoose");
+const mongoose = require("mongoose").set("strictQuery", false);
 const fs = require("fs");
 
 class DatabaseServer {
