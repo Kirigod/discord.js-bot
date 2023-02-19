@@ -28,7 +28,7 @@ module.exports = {
             const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
             
             if(!command) return;
-
+            
             command.execute(client, message, args);
         }catch(error){
             console.error(error);
@@ -75,7 +75,7 @@ module.exports = {
                                 }).catch(console.log);
 
                                 //levelroles;
-                                if(message.guild.me.permissions.has("MANAGE_ROLES") === false) return;
+                                if(message.guild.members.me.permissions.has("MANAGE_ROLES") === false) return;
                             
                                 if(document.levels.levelroles.rewards.length === 0) return;
                                 const searchRewardIndex = document.levels.levelroles.rewards.findIndex(search => search.level === UserLevel);
