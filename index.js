@@ -1,15 +1,17 @@
 "use strict";
-const { Client, Intents, Collection } = require("discord.js");
+const { Client, GatewayIntentBits, Partials, Collection } = require("discord.js");
 const { token } = require('./src/json/definitions.json');
 const fs = require("fs");
 const client = new Client({
     intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_BANS,
-        Intents.FLAGS.GUILD_MEMBERS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.GUILD_PRESENCES
-    ]
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildModeration,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildPresences
+    ],
+    partials: [Partials.Channel]
 });
 client.commands = new Collection();
 
