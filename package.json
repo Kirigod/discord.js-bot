@@ -1,6 +1,6 @@
 {
   "name": "discordjs-bot",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A powerful JavaScript open source bot to make your Discord server a better place.",
   "main": "index.js",
   "scripts": {
@@ -18,8 +18,8 @@
   "author": "Adelson Silva FH",
   "license": "MIT",
   "dependencies": {
-    "canvas": "^2.11.0",
-    "discord.js": "^14.7.1",
-    "mongoose": "^6.9.2"
+    "canvas": "2.11.0",
+    "discord.js": "14.7.1",
+    "mongoose": "6.9.2"
   }
 }
