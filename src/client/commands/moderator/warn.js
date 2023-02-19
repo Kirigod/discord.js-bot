@@ -11,7 +11,7 @@ module.exports = {
     description: "Warns a user.",
     usage: "[command] [member] (optional reason)",
     aliases: [],
-    cooldown: 3000,//30s;
+    cooldown: 30000,//30s;
     permissions: {
         bot: [],
         user: []
