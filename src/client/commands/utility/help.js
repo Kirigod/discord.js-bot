@@ -1,5 +1,5 @@
 "use strict";
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 const { prefix, RichEmbed } = require('../../../json/definitions.json');
 
 module.exports = {
@@ -11,12 +11,20 @@ module.exports = {
     execute(client, message, args){
 
         if(args[0] === undefined){
-            const Embed = new MessageEmbed()
+            const Embed = new EmbedBuilder()
             .setTitle("Standard Commands")
             .setColor(RichEmbed.color)
             .setDescription(`\`${prefix}help [command]\` for more detailed info.`)
-            .addField("moderator", client.commands.filter(cmd => cmd.category === "moderator").map(cmd => `\`${cmd.name}\``).join(", "))
-            .addField("utility", client.commands.filter(cmd => cmd.category === "utility").map(cmd => `\`${cmd.name}\``).join(", "))
+            .addFields(
+                {
+                    name: "moderator",
+                    value: client.commands.filter(cmd => cmd.category === "moderator").map(cmd => `\`${cmd.name}\``).join(", ")
+                },
+                {
+                    name: "utility",
+                    value: client.commands.filter(cmd => cmd.category === "utility").map(cmd => `\`${cmd.name}\``).join(", ")
+                }
+            )
             .setFooter({text: message.author.username, iconURL: message.author.displayAvatarURL()})
             
             return message.channel.send({embeds: [ Embed ]}).catch(() => void(0));
@@ -25,12 +33,19 @@ module.exports = {
         const command = client.commands.get(args[0]) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(args[0]));
 
         if(command){
-            const Embed = new MessageEmbed()
+            const EmbedFields = [
+                {
+                    name: "Description:",
+                    value: `\`${command.description}\``
+                }
+            ];
+            if(!!command.usage) EmbedFields.push({name: "Usage:", value: `\`${command.usage.replace("[command]", `${prefix}${args[0]}`)}\``});
+            if(command.aliases.length > 0) EmbedFields.push({name: "Aliases:", value: command.aliases.map(aliase => `\`${aliase}\``).join(", ")});
+            
+            const Embed = new EmbedBuilder()
             .setTitle("Help Menu")
             .setColor(RichEmbed.color)
-            .addField("Description:", `\`${command.description}\``)
-            if(!!command.usage) Embed.addField("Usage:", `\`${command.usage.replace("[command]", `${prefix}${args[0]}`)}\``)
-            if(command.aliases.length > 0) Embed.addField("Aliases:", command.aliases.map(aliase => `\`${aliase}\``).join(", "))
+            .addFields(EmbedFields)
             
             return message.channel.send({embeds: [ Embed ]}).catch(() => void(0));
 

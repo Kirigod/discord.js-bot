@@ -1,5 +1,5 @@
 "use strict";
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
     name: "avatar",
@@ -16,7 +16,7 @@ module.exports = {
         };
         
         function sendAvatar(user){
-            const Embed = new MessageEmbed()
+            const Embed = new EmbedBuilder()
             .setTitle(user.tag)
             .setDescription(`[**Avatar URL**](${user.displayAvatarURL()})`)
             .setImage(user.displayAvatarURL({ format: "png", size: 256 }))

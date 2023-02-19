@@ -1,5 +1,5 @@
 "use strict";
-const { MessageAttachment } = require("discord.js");
+const { AttachmentBuilder, PermissionsBitField } = require("discord.js");
 const Canvas = require("canvas");
 const mongoose = require("mongoose");
 const db = mongoose.connection;
@@ -19,7 +19,7 @@ module.exports = {
     aliases: ["rk"],
     cooldown: 30000,//30s;
     permissions: {
-        bot: ["ATTACH_FILES"],
+        bot: [PermissionsBitField.Flags.AttachFiles],
         user: []
     },
     execute(client, message){
@@ -30,10 +30,13 @@ module.exports = {
 			if(document.levels.active === false) return;
 			RANK_COOLDOWN.add(message.author.id);
 			
-			if(message.guild.me.permissions.has("ADMINISTRATOR") === false){
+			if(message.guild.members.me.permissions.has([PermissionsBitField.Flags.Administrator]) === false){
                 const PERMISSION = this.permissions["bot"].some(perm => {
-                    if(!message.guild.me.permissions.has(perm)){
-                        return message.channel.send(`I'm missing the **${perm}** permission.`).catch(() => void(0));
+                    if(!message.guild.members.me.permissions.has(perm)){
+						const [[perm_name]] = Object.entries(PermissionsBitField.Flags).filter(([key, value]) => {
+                            if(value === perm) return key;
+                        });
+                        return message.channel.send(`I'm missing the **${perm_name}** permission.`).catch(() => void(0));
                     };
                 });
                 if(PERMISSION) return;
@@ -210,7 +213,7 @@ module.exports = {
 			ctx.stroke();
 			ctx.fill();
 			
-			message.channel.send({files: [ new MessageAttachment(canvas.toBuffer(), "Rank.png") ]}).catch(() => void(0));
+			message.channel.send({files: [ new AttachmentBuilder(canvas.toBuffer(), {name: "Rank.png"}) ]}).catch(() => void(0));
 		}).catch(() => void(0));
 		setTimeout(() => RANK_COOLDOWN.delete(message.author.id), this.cooldown);
 	}
