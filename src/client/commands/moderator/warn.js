@@ -1,5 +1,5 @@
 "use strict";
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder, PermissionsBitField } = require("discord.js");
 const { RichEmbed } = require('../../../json/definitions.json');
 const mongoose = require("mongoose");
 const db = mongoose.connection;
@@ -11,7 +11,7 @@ module.exports = {
     description: "Warns a user.",
     usage: "[command] [member] (optional reason)",
     aliases: [],
-    cooldown: 30000,//30s;
+    cooldown: 3000,//30s;
     permissions: {
         bot: [],
         user: []
@@ -27,7 +27,7 @@ module.exports = {
             
                 const user = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
                 if(!user) return message.channel.send("Member not found").catch(() => void(0));
-                if(user.permissions.has("ADMINISTRATOR")) return message.channel.send("You can't warn a administrator.").catch(() => void(0));
+                if(user.permissions.has([PermissionsBitField.Flags.Administrator])) return message.channel.send("You can't warn a administrator.").catch(() => void(0));
                 
                 const userRoles = user.roles.cache.map(role => role.id);
                 const modRoles = document.moderator["roles"];
@@ -35,7 +35,7 @@ module.exports = {
                 
                 if(user.id === message.author.id) return message.channel.send("You can't warn yourself.").catch(() => void(0));
                 
-                if(message.member.permissions.has("ADMINISTRATOR") === false){
+                if(message.member.permissions.has([PermissionsBitField.Flags.Administrator]) === false){
                     const roles = message.member.roles.cache.map(role => role.id);
                     if(modRoles.some(roleId => roles.includes(roleId)) === false){
                         return message.channel.send(`${message.author}, you can't use that.`).catch(() => void(0));
@@ -47,7 +47,7 @@ module.exports = {
                 
                 const searchUserId = document.users.findIndex(search => search.id === user.id);
             
-                const Embed = new MessageEmbed()
+                const Embed = new EmbedBuilder()
                 .setColor(RichEmbed.color)
                 .setAuthor({ name: `${user.user.tag} has been warned`, iconURL: user.displayAvatarURL({ format: "png", size: 256 })})
                 .setDescription(`**Reason:** ${reason}`)
@@ -91,7 +91,7 @@ module.exports = {
                 
                 const searchUserId = document.users.findIndex(search => search.id === user.id);
             
-                const Embed = new MessageEmbed()
+                const Embed = new EmbedBuilder()
                 .setColor(RichEmbed.color)
                 .setAuthor({ name: `${user.user.tag} has been warned`, iconURL: user.displayAvatarURL({ format: "png", size: 256 })})
                 .setDescription(`**Reason:** ${reason}`)

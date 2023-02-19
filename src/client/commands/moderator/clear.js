@@ -1,4 +1,5 @@
 "use strict";
+const { PermissionsBitField } = require("discord.js");
 const mongoose = require("mongoose");
 const db = mongoose.connection;
 const CLEAR_COOLDOWN = new Set();
@@ -11,8 +12,8 @@ module.exports = {
     aliases: ["prune"],
     cooldown: 10000,//10s;
     permissions: {
-        bot: ["MANAGE_MESSAGES"],
-        user: ["MANAGE_MESSAGES"]
+        bot: [PermissionsBitField.Flags.ManageMessages],
+        user: [PermissionsBitField.Flags.ManageMessages]
     },
     execute(client, message, args){
         if(CLEAR_COOLDOWN.has(message.author.id)) return message.channel.send("Wait 10s after using this command to use it again.").catch(() => void(0));
@@ -30,7 +31,7 @@ module.exports = {
 
             const modRoles = document.moderator["roles"];
             
-            if(message.member.permissions.has("ADMINISTRATOR") === false){
+            if(message.member.permissions.has([PermissionsBitField.Flags.Administrator]) === false){
                 const roles = message.member.roles.cache.map(role => role.id);
                 if(modRoles.some(roleId => roles.includes(roleId)) === false){
                     const PERMISSION = this.permissions["user"].some(perm => {
@@ -42,10 +43,13 @@ module.exports = {
                 };
             };
         
-            if(message.guild.me.permissions.has("ADMINISTRATOR") === false){
+            if(message.guild.members.me.permissions.has([PermissionsBitField.Flags.Administrator]) === false){
                 const PERMISSION = this.permissions["bot"].some(perm => {
-                    if(!message.guild.me.permissions.has(perm)){
-                        return message.channel.send(`I can't do that because I'm missing the **${perm}** permission.`).catch(() => void(0));
+                    if(!message.guild.members.me.permissions.has(perm)){
+                        const [[perm_name]] = Object.entries(PermissionsBitField.Flags).filter(([key, value]) => {
+                            if(value === perm) return key;
+                        });
+                        return message.channel.send(`I can't do that because I'm missing the **${perm_name}** permission.`).catch(() => void(0));
                     };
                 });
                 if(PERMISSION) return;

@@ -1,5 +1,5 @@
 "use strict";
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder, PermissionsBitField } = require("discord.js");
 const { RichEmbed } = require('../../../json/definitions.json');
 const mongoose = require("mongoose");
 const db = mongoose.connection;
@@ -13,8 +13,8 @@ module.exports = {
     aliases: [],
     cooldown: 30000,//30s;
     permissions: {
-        bot: ["MODERATE_MEMBERS"],
-        user: ["MODERATE_MEMBERS"]
+        bot: [PermissionsBitField.Flags.ModerateMembers],
+        user: [PermissionsBitField.Flags.ModerateMembers]
     },
     execute(client, message, args){
         if(TIMEOUT_COOLDOWN.has(message.author.id)) return message.channel.send("Wait 30s after using this command to use it again.").catch(() => void(0));
@@ -26,7 +26,7 @@ module.exports = {
             
             const user = message.mentions.members.first();
             if(!user) return message.channel.send("Member not found").catch(() => void(0));
-            if(user.permissions.has("ADMINISTRATOR")) return message.channel.send("You can't timeout a administrator.").catch(() => void(0));
+            if(user.permissions.has([PermissionsBitField.Flags.Administrator])) return message.channel.send("You can't timeout a administrator.").catch(() => void(0));
             
             const userRoles = user.roles.cache.map(role => role.id);
             const modRoles = document.moderator["roles"];
@@ -34,11 +34,11 @@ module.exports = {
             
             if(user.id === message.author.id) return message.channel.send("You can't timeout yourself.").catch(() => void(0));
             
-            if(user.roles.highest.rawPosition >= message.guild.me.roles.highest.rawPosition){
+            if(user.roles.highest.rawPosition >= message.guild.members.me.roles.highest.rawPosition){
                 return message.channel.send("I can't do that because my **highest role** is **too low** in the hierarchy.").catch(() => void(0));
             };
             
-            if(message.member.permissions.has("ADMINISTRATOR") === false){
+            if(message.member.permissions.has([PermissionsBitField.Flags.Administrator]) === false){
                 const roles = message.member.roles.cache.map(role => role.id);
                 if(modRoles.some(roleId => roles.includes(roleId)) === false){
                     const PERMISSION = this.permissions["user"].some(perm => {
@@ -50,17 +50,20 @@ module.exports = {
                 };
             };
         
-            if(message.guild.me.permissions.has("ADMINISTRATOR") === false){
+            if(message.guild.members.me.permissions.has([PermissionsBitField.Flags.Administrator]) === false){
                 const PERMISSION = this.permissions["bot"].some(perm => {
-                    if(!message.guild.me.permissions.has(perm)){
-                        return message.channel.send(`I can't do that because I'm missing the **${perm}** permission.`).catch(() => void(0));
+                    if(!message.guild.members.me.permissions.has(perm)){
+                        const [[perm_name]] = Object.entries(PermissionsBitField.Flags).filter(([key, value]) => {
+                            if(value === perm) return key;
+                        });
+                        return message.channel.send(`I can't do that because I'm missing the **${perm_name}** permission.`).catch(() => void(0));
                     };
                 });
                 if(PERMISSION) return;
             };
         
             const duration = args[1]?.match(/\d+|\D+/g) || [0, null];
-            const reason = args.slice(2).join(" ") || null;
+            const reason = args.slice(2).join(" ") || "Unspecified";
             if(reason.length > 512) return message.channel.send("The maximum length of reason is 512.").catch(() => void(0));
 
             const timeout = {
@@ -79,10 +82,10 @@ module.exports = {
             const FinalTime = time * timeout.timer[type];
         
             if(!time === true || !timeout.timer[type] === true || FinalTime < timeout["min"] || FinalTime > timeout["max"]){
-                const Embed = new MessageEmbed()
+                const Embed = new EmbedBuilder()
                 .setColor(RichEmbed.color)
                 .setTitle("Invalid time format!")
-                .addField("Duration:", "**min:** ``10m``\n**max:** ``28d``")
+                .addFields({name: "Duration:", value: "**min:** ``10m``\n**max:** ``28d``"})
                 .setDescription("**Example format:**\n``10d`` => 10 days\n``10h`` => 10 hours\n``10m`` => 10 minutes")
                 
                 return message.channel.send({embeds: [ Embed ]}).catch(() => void(0));

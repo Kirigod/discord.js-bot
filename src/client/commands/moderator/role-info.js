@@ -1,5 +1,5 @@
 "use strict";
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder, PermissionsBitField } = require("discord.js");
 const { RichEmbed } = require('../../../json/definitions.json');
 const mongoose = require("mongoose");
 const db = mongoose.connection;
@@ -38,7 +38,7 @@ module.exports = {
             if(document.moderator.active === false) return;
             RI_COOLDOWN.add(message.author.id);
 
-            if(message.member.permissions.has("ADMINISTRATOR") === false){
+            if(message.member.permissions.has([PermissionsBitField.Flags.Administrator]) === false){
                 const userRoles = message.member.roles.cache.map(role => role.id);
                 const modRoles = document.moderator["roles"];
 
@@ -50,7 +50,7 @@ module.exports = {
             const taggedRole = message.mentions.roles.first() || message.guild.roles.cache.get(args[0]);
             if(!taggedRole) return message.channel.send("Role not found!");
         
-            const Embed = new MessageEmbed()
+            const Embed = new EmbedBuilder()
             .setColor(RichEmbed.color)
             .setTimestamp()
             .setDescription(`

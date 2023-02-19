@@ -1,5 +1,5 @@
 "use strict";
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder, ChannelType, PermissionsBitField } = require("discord.js");
 const { RichEmbed } = require('../../../json/definitions.json');
 const mongoose = require("mongoose");
 const db = mongoose.connection;
@@ -33,7 +33,7 @@ module.exports = {
             if(document.moderator.active === false) return;
             SF_COOLDOWN.add(message.author.id);
 
-            if(message.member.permissions.has("ADMINISTRATOR") === false){
+            if(message.member.permissions.has([PermissionsBitField.Flags.Administrator]) === false){
                 const userRoles = message.member.roles.cache.map(role => role.id);
                 const modRoles = document.moderator["roles"];
 
@@ -43,12 +43,12 @@ module.exports = {
             };
         
             const channels = {
-                text: message.guild.channels.cache.filter(c => c.type === "GUILD_TEXT").size,
-                voice: message.guild.channels.cache.filter(c => c.type === "GUILD_VOICE").size,
-                category: message.guild.channels.cache.filter(c => c.type === "GUILD_CATEGORY").size
+                text: message.guild.channels.cache.filter(c => c.type === ChannelType.GuildText).size,
+                voice: message.guild.channels.cache.filter(c => c.type === ChannelType.GuildVoice).size,
+                category: message.guild.channels.cache.filter(c => c.type === ChannelType.GuildCategory).size
             };
 
-            const Embed = new MessageEmbed()
+            const Embed = new EmbedBuilder()
             .setColor(RichEmbed.color)
             .setTimestamp()
             .setThumbnail(message.guild.iconURL())

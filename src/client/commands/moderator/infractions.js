@@ -1,5 +1,5 @@
 "use strict";
-const { MessageEmbed, MessageButton, MessageActionRow, MessageSelectMenu } = require("discord.js");
+const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, StringSelectMenuBuilder, PermissionsBitField, ComponentType } = require("discord.js");
 const { RichEmbed } = require('../../../json/definitions.json');
 const mongoose = require("mongoose");
 const db = mongoose.connection;
@@ -29,7 +29,7 @@ module.exports = {
 
             const modRoles = document.moderator["roles"];
 
-            if(message.member.permissions.has("ADMINISTRATOR") === false){
+            if(message.member.permissions.has([PermissionsBitField.Flags.Administrator]) === false){
                 const roles = message.member.roles.cache.map(role => role.id);
                 if(modRoles.some(roleId => roles.includes(roleId)) === false){
                     return message.channel.send(`${message.author}, you can't use that.`).catch(() => void(0));
@@ -39,7 +39,7 @@ module.exports = {
             const searchUserIndex = document.users.findIndex((search) => search.id === member.id);
             const memberInfractions = document.users[searchUserIndex]?.infractions;
             if(searchUserIndex === -1 || memberInfractions?.length === 0){
-                const Embed = new MessageEmbed()
+                const Embed = new EmbedBuilder()
                 .setColor(RichEmbed.color)
                 .setAuthor({ name: `${member.user.tag} has no infractions`, iconURL: member.displayAvatarURL({ format: "png", size: 256 })})
 
@@ -51,23 +51,23 @@ module.exports = {
                 return `**${infraction.reason}** • <t:${Math.floor(infraction.createdTimestamp / 1000)}:R> [\`${index + 1}\`]`;
             });
 
-            const Embed = new MessageEmbed()
+            const Embed = new EmbedBuilder()
             .setColor(RichEmbed.color)
             .setAuthor({ name: `${member.user.tag}'s infractions`, iconURL: member.displayAvatarURL({ format: "png", size: 256 })})
             .setDescription(`
             **Total:** \`${memberInfractions.length} infractions\`\n
             **Last 10 infractions:**
             ${memberInfractionMAP.join("\n")}`)
-
-            const ButtonMessageAction = new MessageButton()
+            
+            const ButtonMessageAction = new ButtonBuilder()
             .setCustomId("infractions-button")
             .setLabel("Manage Infractions")
-            .setStyle("PRIMARY");
-            const ButtonAction = new MessageActionRow()
+            .setStyle(ButtonStyle.Primary);
+            const ButtonAction = new ActionRowBuilder()
 			.addComponents(ButtonMessageAction);
             
             message.channel.send({embeds: [ Embed ], components: [ ButtonAction ]}).then(messageButton => {
-                const button = messageButton.createMessageComponentCollector({ componentType: "BUTTON", time: 15000 });//15s;
+                const button = messageButton.createMessageComponentCollector({ componentType: ComponentType.Button, time: 15000 });//15s;
                 
                 button.on("collect", async interaction => {
                     if(interaction.user.id !== message.author.id) return;
@@ -88,18 +88,19 @@ module.exports = {
                         description: "If selected, deletes all infractions for this user.",
                         value: JSON.stringify({all: true, userID: member.id, guildID: message.guild.id})
                     });
+                    //return console.log(memberInfractionActionRow)
 
-                    const ActionContent = new MessageSelectMenu()
+                    const ActionContent = new StringSelectMenuBuilder()
                     .setCustomId("delete-infraction")
-                    //.setPlaceholder("Nothing selected")
-                    .addOptions([memberInfractionActionRow])
+                    .setPlaceholder("Nothing selected")
+                    .addOptions(memberInfractionActionRow)
                     
-                    const Action = new MessageActionRow()
+                    const Action = new ActionRowBuilder()
                     .addComponents(ActionContent);
                     
                     messageButton.edit({ components: [ ButtonAction ] }).then(() => {
                         messageButton.reply({ components: [ Action ] }).then(messageData => {
-                            const collector = messageData.createMessageComponentCollector({ componentType: "SELECT_MENU", time: 15000 });//15s;
+                            const collector = messageData.createMessageComponentCollector({ componentType: ComponentType.StringSelect, time: 15000 });//15s;
 
                             collector.on("collect", interaction => {
                                 if(interaction.user.id !== message.author.id) return;

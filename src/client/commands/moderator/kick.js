@@ -1,5 +1,5 @@
 "use strict";
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder, PermissionsBitField } = require("discord.js");
 const { RichEmbed } = require('../../../json/definitions.json');
 const mongoose = require("mongoose");
 const db = mongoose.connection;
@@ -13,8 +13,8 @@ module.exports = {
     aliases: [],
     cooldown: 30000,//30s;
     permissions: {
-        bot: ["KICK_MEMBERS"],
-        user: ["KICK_MEMBERS"]
+        bot: [PermissionsBitField.Flags.KickMembers],
+        user: [PermissionsBitField.Flags.KickMembers]
     },
     execute(client, message, args){
         if(KICK_COOLDOWN.has(message.author.id)) return message.channel.send("Wait 30s after using this command to use it again.").catch(() => void(0));
@@ -26,7 +26,7 @@ module.exports = {
 
             const user = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
             if(!user) return message.channel.send("Member not found").catch(() => void(0));
-            if(user.permissions.has("ADMINISTRATOR")) return message.channel.send("You can't kick a administrator.").catch(() => void(0));
+            if(user.permissions.has([PermissionsBitField.Flags.Administrator])) return message.channel.send("You can't kick a administrator.").catch(() => void(0));
             
             const userRoles = user.roles.cache.map(role => role.id);
             const modRoles = document.moderator["roles"];
@@ -34,11 +34,11 @@ module.exports = {
             
             if(user.id === message.author.id) return message.channel.send("You can't kick yourself.").catch(() => void(0));
             
-            if(user.roles.highest.rawPosition >= message.guild.me.roles.highest.rawPosition){
+            if(user.roles.highest.rawPosition >= message.guild.members.me.roles.highest.rawPosition){
                 return message.channel.send("I can't do that because my **highest role** is **too low** in the hierarchy.").catch(() => void(0));
             };
 
-            if(message.member.permissions.has("ADMINISTRATOR") === false){
+            if(message.member.permissions.has([PermissionsBitField.Flags.Administrator]) === false){
                 const roles = message.member.roles.cache.map(role => role.id);
                 if(modRoles.some(roleId => roles.includes(roleId)) === false){
                     const PERMISSION = this.permissions["user"].some(perm => {
@@ -50,10 +50,13 @@ module.exports = {
                 };
             };
         
-            if(message.guild.me.permissions.has("ADMINISTRATOR") === false){
+            if(message.guild.members.me.permissions.has([PermissionsBitField.Flags.Administrator]) === false){
                 const PERMISSION = this.permissions["bot"].some(perm => {
-                    if(!message.guild.me.permissions.has(perm)){
-                        return message.channel.send(`I can't do that because I'm missing the **${perm}** permission.`).catch(() => void(0));
+                    if(!message.guild.members.me.permissions.has(perm)){
+                        const [[perm_name]] = Object.entries(PermissionsBitField.Flags).filter(([key, value]) => {
+                            if(value === perm) return key;
+                        });
+                        return message.channel.send(`I can't do that because I'm missing the **${perm_name}** permission.`).catch(() => void(0));
                     };
                 });
                 if(PERMISSION) return;
@@ -63,7 +66,7 @@ module.exports = {
             if(reason.length > 512) return message.channel.send("The maximum length of reason is 512.").catch(() => void(0));
 
             user.kick(reason).then(member => {
-                const Embed = new MessageEmbed()
+                const Embed = new EmbedBuilder()
                 .setColor(RichEmbed.color)
                 .setAuthor({ name: `${member.user.tag} has been kicked`, iconURL: member.displayAvatarURL({ format: "png", size: 256 })})
                 .setDescription(`**Reason:** ${reason}`)
