@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const DatabaseServer = require('../class/DatabaseServer.js');
 const ServerDB = new DatabaseServer({
-    host: "localhost",
+    host: "0.0.0.0",
     port: 27017,
     exepath: __dirname + "/../www/mongodb/bin/mongod.exe",
     dbpath: __dirname +"/../db",
